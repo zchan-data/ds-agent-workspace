@@ -1,4 +1,4 @@
-# Data Science AI Workspace
+# Data Science Agent Workspace
 
 An opinionated workspace for doing data science with an AI coding agent
 ([Claude Code](https://claude.com/claude-code), or anything else that reads a

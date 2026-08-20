@@ -1,4 +1,4 @@
-# Data Science AI Workspace
+# Data Science Agent Workspace
 
 ## Purpose
 
@@ -11,7 +11,7 @@ Primary language: **Python**. SQL is preferred for data extraction and heavy agg
 ## Folder Structure
 
 ```
-data-science-ai/
+ds-agent-workspace/
 ├── CLAUDE.md               ← you are here
 ├── playbooks/              ← how-to guides for each workflow stage
 │   ├── 00-data-acquisition/
