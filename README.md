@@ -37,8 +37,8 @@ cp -r templates/project-skeleton projects/my-project
 cd projects/my-project && git init
 ```
 
-Fill in the project `README.md` — goal and data sources — before doing anything
-else, then point your agent at the workspace. `CLAUDE.md` is loaded
+Fill in the project `README.md` with the goal and data sources before doing
+anything else, then point your agent at the workspace. `CLAUDE.md` is loaded
 automatically by Claude Code; other tools may need it pointed at explicitly.
 
 Run the shared utility tests from the workspace root:
@@ -57,7 +57,7 @@ worth knowing about before you adopt it.
 
 **Playbooks are instructions, not documentation.** `CLAUDE.md` directs the agent
 to read the relevant playbook *before* starting a stage. They're written as
-checklists and decision tables — the format an agent follows well — rather than
+checklists and decision tables, the format an agent follows well, rather than as
 prose explaining concepts it already knows.
 
 **The decision log is the experiment tracker.** Every project README carries a
@@ -69,15 +69,15 @@ sets up. Negative results get logged with the same care as positive ones.
 **Test invariants, not outputs.** Analysis bugs rarely crash; they produce a
 plausible wrong number. So the tests assert properties: no look-ahead in
 features, no future data in a training fold, transforms fitted only on training
-data. `shared/utils/leakage.py` implements the general version — build features
-on full history and on truncated history, and flag every column that changes.
-One assertion catches leaks nobody thought to look for.
+data. `shared/utils/leakage.py` implements the general version: build features on
+full history and on truncated history, then flag every column that changes. One
+assertion catches leaks nobody thought to look for.
 
 **Time series is treated as its own discipline.**
 [`playbooks/04-modeling/time-series.md`](playbooks/04-modeling/time-series.md)
 exists because temporal data is a regression problem *plus* four categories of
 leak that silently invalidate results. It's the most expensively-learned file
-here — see below.
+here, for the reason described below.
 
 ---
 
@@ -89,20 +89,20 @@ encouraging **+1.82 Sharpe ratio**, which turned out to be an artifact of a
 105-day evaluation window. Widening it to 1,861 days flipped the sign. Correcting
 the cost accounting, averaging over rebalance timing instead of reporting the
 best configuration, and applying a HAC correction for overlapping windows left a
-final answer of **no tradable edge** — a negative result, and the correct one.
+final answer of **no tradable edge**, a negative result and the correct one.
 
 Nothing was wrong with the model. Everything was wrong with how it was measured.
 
 The playbooks and the shared utilities are the parts of that experience worth
 keeping, so the next project starts from the corrected version. The project
-itself isn't in this repo — only what generalizes.
+itself isn't in this repo, only what generalizes from it.
 
 ---
 
 ## Adapting it
 
 Fork it and edit. The tooling preferences in `CLAUDE.md` (pandas, scikit-learn,
-LightGBM, FastAPI, Streamlit, DuckDB) are choices, not requirements — change the
+LightGBM, FastAPI, Streamlit, DuckDB) are choices, not requirements. Change the
 table and the agent follows. Playbooks marked as stubs are intentionally thin;
 fill them in with your own conventions as you hit them.
 
@@ -111,4 +111,4 @@ section of `CLAUDE.md`, plus `time-series.md` if you touch temporal data at all.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
