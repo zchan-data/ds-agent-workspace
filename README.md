@@ -50,6 +50,47 @@ pytest
 
 ---
 
+## The playbooks
+
+`playbooks/` is the substance of this repo. Each one covers a single stage and is
+written to be *followed* rather than read: decision tables for choosing an
+approach, checklists for the work itself, and named anti-patterns to avoid.
+`CLAUDE.md` directs the agent to the relevant playbook before it starts a stage.
+
+| Stage | What it covers |
+|---|---|
+| [**00 Data acquisition**](playbooks/00-data-acquisition/README.md) | Getting raw data in and recording where it came from. Sources are tried in order of stability: official API first, then files and databases, then scraping as a last resort. Raw payloads land untouched in `data/raw/` with provenance logged. |
+| [**01 Data cleaning**](playbooks/01-data-cleaning.md) | Reaching a typed, validated frame. Dtypes, duplicates, missing values, outliers, and a documented decision for each, with the raw data left untouched. |
+| [**02 EDA**](playbooks/02-eda.md) | Univariate through multivariate analysis, class balance, temporal patterns, and projecting high-dimensional data with PCA, UMAP, or t-SNE. Findings get narrated in the notebook, figures saved to `outputs/figures/`. |
+| [**03 Feature engineering**](playbooks/03-feature-engineering.md) | Encoding, scaling, interactions, and dimensionality reduction, including a table for picking between PCA, TruncatedSVD, LDA, UMAP, and autoencoders. Everything fitted inside a pipeline so it stays leakage-free. |
+| [**04 Modeling**](playbooks/04-modeling/README.md) | Baseline first, tune on cross-validation and never on test, serialize the preprocessor together with the model. Routes to one of four sub-playbooks. |
+| [**05 Deployment**](playbooks/05-deployment/README.md) | Decoupling the model from the serving layer, pinning dependencies, validating inputs at the boundary, and logging predictions for monitoring. Routes to one of three targets. |
+| [**06 SQL analytics**](playbooks/06-analytics.md) | When to push work into SQL instead of Python, query conventions (CTEs, `.sql` files under `src/queries/`, grain and fan-out checks), and DuckDB for querying local Parquet. |
+
+Three stages have sub-playbooks, and their `README.md` acts as the router:
+
+**Acquisition** splits into `apis.md` (auth patterns, pagination to completion,
+rate limits and backoff, response caching), `files-databases.md` (format loaders,
+why Parquet beats CSV, warehouse pulls, schema validation on load), and
+`scraping.md`, which is the most opinionated of the three: a legal and ethics
+gate you cannot skip, a decision framework that pushes you toward a backing JSON
+endpoint before you ever parse HTML, and a list of anti-patterns like reaching
+for a headless browser when `requests` would do.
+
+**Modeling** splits into `classification.md` and `regression.md` (metric
+selection by scenario, and a model progression from a dummy baseline through
+linear models to boosted trees), `deep-learning.md` (start from pretrained, plus
+a separate checklist for LLM and RAG work), and
+[`time-series.md`](playbooks/04-modeling/time-series.md), described below.
+
+**Deployment** splits into `api.md` (FastAPI with Pydantic schemas, model loaded
+at startup, health endpoint, per-request logging), `dashboard.md` (Streamlit
+versus Dash, caching, testing against realistic data volumes), and
+`reporting.md` (`nbconvert` for clean exports, `papermill` for parameterized
+reports).
+
+---
+
 ## The opinionated parts
 
 Most of this is unremarkable good practice. Four things are deliberate choices
@@ -76,26 +117,10 @@ assertion catches leaks nobody thought to look for.
 **Time series is treated as its own discipline.**
 [`playbooks/04-modeling/time-series.md`](playbooks/04-modeling/time-series.md)
 exists because temporal data is a regression problem *plus* four categories of
-leak that silently invalidate results. It's the most expensively-learned file
-here, for the reason described below.
-
----
-
-## Where this came from
-
-The methodology isn't invented. It's the residue of a real project built in this
-workspace: a cross-sectional equity forecasting model that produced an
-encouraging **+1.82 Sharpe ratio**, which turned out to be an artifact of a
-105-day evaluation window. Widening it to 1,861 days flipped the sign. Correcting
-the cost accounting, averaging over rebalance timing instead of reporting the
-best configuration, and applying a HAC correction for overlapping windows left a
-final answer of **no tradable edge**, a negative result and the correct one.
-
-Nothing was wrong with the model. Everything was wrong with how it was measured.
-
-The playbooks and the shared utilities are the parts of that experience worth
-keeping, so the next project starts from the corrected version. The project
-itself isn't in this repo, only what generalizes from it.
+leak that silently invalidate results: features that see their own future, labels
+that overlap the fold boundary, preprocessing fitted across the split, and a
+universe selected on facts known only later. It is the longest and most detailed
+file in the repo.
 
 ---
 
