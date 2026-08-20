@@ -1,0 +1,31 @@
+# Core data stack — trim to what this project actually uses, then pin versions.
+
+# Data manipulation
+pandas
+# polars            # uncomment for large data
+
+# Numerical / scientific
+numpy
+scipy
+
+# Visualization
+matplotlib
+seaborn
+# plotly            # interactive plots
+
+# Classical ML
+scikit-learn
+
+# Notebooks
+jupyterlab
+
+# Config
+python-dotenv
+
+# --- Add per project as needed ---
+# lightgbm / xgboost          # gradient boosting
+# torch / transformers        # deep learning / LLMs
+# fastapi uvicorn             # API deployment
+# streamlit                   # dashboard
+# duckdb sqlalchemy           # SQL / databases
+# requests beautifulsoup4 playwright tenacity   # data acquisition

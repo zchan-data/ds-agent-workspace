@@ -1,0 +1,32 @@
+# Workspace-level ignores.
+#
+# This repository is the *workflow* — playbooks, templates, and shared code.
+# Actual project work under projects/ is deliberately NOT tracked here: each
+# project is its own git repository, so private data and analysis never end up
+# in this public one. See templates/project-skeleton/.gitignore for the
+# per-project ignores (data/, models/, outputs/).
+
+projects/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+
+# --- Secrets ---
+.env
+
+# --- OS / editor cruft ---
+.DS_Store
+.idea/
+.vscode/
+
+# conda env create scratch files
+condaenv.*.requirements.txt
